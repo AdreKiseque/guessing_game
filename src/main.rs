@@ -1,11 +1,13 @@
-use std::io;
+use std::{io, ops::RangeInclusive};
 use rand::Rng;
 use std::cmp::Ordering;
 
-fn main() {
-    println!("Guess the number!");
+const RANGE: RangeInclusive<i32> = 1..=100;
 
-    let secret_number = rand::thread_rng().gen_range(1..=100);
+fn main() {
+    println!("Guess the number!\nRange: {}~{}", RANGE.start(), RANGE.end());
+
+    let secret_number = rand::thread_rng().gen_range(RANGE);
     let mut guesses = 0;
 
     // println!("The secret number is: {secret_number}");
@@ -15,19 +17,23 @@ fn main() {
         
         let guess = loop {
 
-            let mut guess = String::new();
+            let mut input = String::new();
             io::stdin()
-            .read_line(&mut guess)
+            .read_line(&mut input)
             .expect("Something has gone very wrong; terminating.");
 
-            let guess: u32 = match guess.trim().parse() {
+            let input: i32 = match input.trim().parse() {
                 Ok(num) => num,
                 Err(_) => {
                     println!("That's not a number, you silly goose!\nTry again :)");
                     continue;
                 }
             };
-            break guess;
+            if !(RANGE.contains(&input)) {
+                println!("That number is not in range!\nTry a number between {} and {}.", RANGE.start(), RANGE.end());
+                continue;
+            }
+            break input;
         };
 
         guesses += 1;
@@ -42,6 +48,9 @@ fn main() {
                     println!("You got it in 1 guess! Lucky!");
                 } else {
                     println!("You got it in {guesses} guesses.");
+                } if guesses > RANGE.count().ilog2() + 2 {
+                    // Advice, but with a bit of leeway to account for rounding and human error before chastity
+                    println!("Consider employing a binary search alogrithm next time :)");
                 }
                 break;
             }

@@ -48,7 +48,8 @@ fn main() {
                     println!("You got it in 1 guess! Lucky!");
                 } else {
                     println!("You got it in {guesses} guesses.");
-                } if guesses > RANGE.count().ilog2() + 2 {
+                }
+                if guesses > RANGE.count().ilog2() + 2 {
                     // Advice, but with a bit of leeway to account for rounding and human error before chastity
                     println!("Consider employing a binary search alogrithm next time :)");
                 }
